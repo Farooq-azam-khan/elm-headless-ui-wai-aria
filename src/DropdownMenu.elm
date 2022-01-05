@@ -10,7 +10,7 @@ import Html.Attributes exposing (..)
 
 type MenuItemStatus
     = Active
-    | Inactive
+    | Inactive -- can i add disabled?
 
 
 type MenuStatus
@@ -18,13 +18,10 @@ type MenuStatus
     | MenuIsClose
 
 
-
--- TODO: add menu dropdown button
-
-
 type alias Menu msg =
     { menu_open_status : MenuStatus
-    , content_when_menu_is_open : Html msg
+    , content_when_menu_is_open : List (MenuItem msg)
+    , menu_button : Html msg 
     }
 
 
@@ -36,65 +33,53 @@ type alias MenuItem msg =
     }
 
 
+aria_labelled_by = attribute "aria-labelledby" "headlessui-menu-items"
 dropdown_menu :
     Menu msg
-    -> Html msg -- List (Attribute msg) -> List (Html msg) -> Html msg
+    -> Html msg
 dropdown_menu menu_rec =
-    case menu_rec.menu_open_status of
-        MenuIsOpen ->
-            menu_rec.content_when_menu_is_open
+        let 
+            first_item = case List.head menu_rec.content_when_menu_is_open of 
+                                Just mi -> mi.active_children
+                                Nothing -> div [] []
+        in 
+            case menu_rec.menu_open_status of
+                    MenuIsOpen ->
+                        div 
+                            [] 
+                            [ menu_rec.menu_button
+                            , div 
+                                [ aria_labelled_by
+                                , attribute "role" "menu"
+                                , attribute "tabindex" "0" 
+                                ] (List.map menu_item menu_rec.content_when_menu_is_open)
+                            ]
+                    MenuIsClose ->
+                        div []
+                            [ menu_rec.menu_button ]
 
-        MenuIsClose ->
-            text ""
-
-
-
--- TODO: show menu dropdown button
-
-
-menu_button : List (Attribute msg) -> List (Html msg) -> Html msg
-menu_button attr children =
-    button attr children
-
-
-active_menu_item : List (Attribute msg) -> List (Html msg) -> Html msg
-active_menu_item attr children =
-    div attr children
 
 
 menu_item :
     MenuItem msg
-    -> Html msg -- List (Attribute msg) -> List (Html msg) -> Html msg
+    -> Html msg 
 menu_item menu_item_record =
-    case menu_item_record.status of
-        Active ->
-            div [] [ text "active item" ]
+    let 
+        disabled_aria = if menu_item_record.is_disabled 
+                            then attribute "aria-disabled" "true"
+                            else attribute "aria-disabled" "false"
+    in 
+        case menu_item_record.status of
+            Active ->
+                div 
+                    [ attribute "role" "menuitem"
+                    , attribute "tabindex" "-1"
+                    ] [menu_item_record.active_children]
 
-        Inactive ->
-            div [] [ text "inactive item" ]
+            Inactive ->
+                div 
+                    [ attribute "role" "menuitem"
+                    , attribute "tabindex" "-1"
+                    ] [menu_item_record.inactive_children]
 
 
-
--- API
--- view : model -> Html msg
--- view _ =
---     dropdown_menu
---         { menu_open_status = MenuIsClose
---         , content_when_menu_is_open =
---             div []
---                 [ menu_button [] [ text "more" ]
---                 , active_menu_item [] [ a [ href "#" ] [ text "Account Settings" ] ]
---                 , menu_item
---                     { status = Active
---                     , inactive_children = div [] [ text "inactive" ]
---                     , active_children = div [] [ text "active item" ]
---                     , is_disabled = False
---                     }
---                 , menu_item
---                     { status = Inactive
---                     , inactive_children = div [] [ text "comming soon" ]
---                     , active_children = div [] [ text "it's here" ]
---                     , is_disabled = True
---                     }
---                 ]
---         }
