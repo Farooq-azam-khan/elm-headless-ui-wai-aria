@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <title>App</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="dist/output.css" />
+  <script src="dist/elm.js"></script>
+</head>
+
+<body>
+  <div id="elm-app"></div>
+  <script>
+    const APP_NAME = 'TECH-STACK'
+
+    const node = document.querySelector('#elm-app')
+    if (node) {
+      // Get token from local storage
+      const token_str = localStorage.getItem(`${APP_NAME}_token`)
+      const token_json = token_str ? JSON.parse(token_str) : null
+      console.log('read token:', token_json, typeof token_json)
+      const app = Elm.Main.init({
+        node: node,
+        flags: { 'token': token_json }
+      })
+
+      app.ports.storeTokenData.subscribe((token) => {
+        console.log('From index.html', token)
+        localStorage.setItem(`${APP_NAME}_token`, JSON.stringify(token));
+      })
+    }
+  </script>
+</body>
+
+</html>

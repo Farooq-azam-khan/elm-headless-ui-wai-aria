@@ -1,0 +1,31 @@
+{
+  "name": "elm-headless-ui-wai-aria",
+  "version": "1.0.0",
+  "description": "https://www.w3.org/TR/wai-aria-practices-1.1",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "dev": "concurrently npm:watch:*",
+    "dev:elm": "elm-live -p 3000 src/Main.elm --pushstate -- --debug --output=dist/elm.js",
+    "dev:tailwind": "tailwindcss -i ./src/input.css -o ./dist/output.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Farooq-azam-khan/elm-headless-ui-wai-aria.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Farooq-azam-khan/elm-headless-ui-wai-aria/issues"
+  },
+  "homepage": "https://github.com/Farooq-azam-khan/elm-headless-ui-wai-aria#readme",
+  "devDependencies": {
+    "tailwindcss": "^3.0.11",
+    "concurrently": "^6.5.1",
+    "elm": "^0.19.1-5",
+    "elm-format": "^0.8.5",
+    "elm-live": "^4.0.2"
+  }
+}
